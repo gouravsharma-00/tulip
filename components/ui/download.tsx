@@ -1,4 +1,5 @@
 import React from 'react'
+import { ZIP } from '@constants/zip'
 
 export default function Download() {
     return(
@@ -8,7 +9,7 @@ export default function Download() {
                 <p className="text-gray-600 max-w-md">
                 Experience all features without limits. Download now and start using our extension for free!
                 </p>
-                <a href='/downloads/sample.zip' download className="px-8 py-3 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700 transition">
+                <a href={ZIP.URL} download className="px-8 py-3 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700 transition">
                 Download Now
                 </a>
             </div>

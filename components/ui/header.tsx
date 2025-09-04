@@ -1,6 +1,6 @@
 import React from 'react'
 import { Icon } from '@constants/icon'
-
+import { ZIP } from '@constants/zip'
 export default function Header() {
     return(
         <section className='w-full h-28 outline-1 outline-gray-400  flex'>
@@ -14,7 +14,7 @@ export default function Header() {
 
                 <div className="flex items-center space-x-6">
                     <a
-                    href="/downloads/sample.zip"
+                    href={ZIP.URL}
                     download
                     className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-blue-700 transition"
                     >

@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name" : "NPTEL",
+    "description": "An AI powered automated extension to complete your NPTEL quizes",
+    "version": "1.0",
+    "permissions": [
+        "scripting",
+        "tabs",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://onlinecourses.nptel.ac.in/*",
+        "https://storage.googleapis.com/*"
+    ],
+    "action" : {
+        "default_popup": "index.html",
+        "default_icon": {
+            "16": "icon.png",
+            "48": "icon.png",
+            "128": "icon.png"
+        }
+    },
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    }
+}
