@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import { GoogleGenAI } from '@google/genai';
 
 export default function API({setFlag, setMessage} : {setFlag: (flag: boolean) => void, setMessage: (message: string) => void}) {
     const [api, setApi] = useState<string>('');
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
 
         e.preventDefault();
     
@@ -13,33 +14,53 @@ export default function API({setFlag, setMessage} : {setFlag: (flag: boolean) =>
         /**
          * Test if API is valid or not
          */
-        const gemini = (api: string) => {
-          if(!api) {
-            return {
-              status: 429
-            }
-          }
-          const status = 401;
+        try {
+      const gemini = async (api: string) => {
+              if(!api) {
+                return {
+                  status: 429
+                }
+              }
+              const ai = new GoogleGenAI({apiKey: api});
+              const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: "Hello gemini, just say hi",
+                config: {
+                  thinkingConfig: {
+                    thinkingBudget: 0, // Disables thinking
+                  },
+                } 
+              });
+              console.log(response);
+              
 
-          return {
-            status: status
-          }
+              return {
+                status: 200
+              }
+            } 
+        }catch(err) {
+
         }
-        const result = gemini(api);
+       
+        const result = await gemini(api);
         if(result.status !== 200) {
           switch(result.status) {
             case 401:
-              setMessage(`401 UNAUTHENTICATED: Invalid/expired API key`);
+              // 401 UNAUTHENTICATED
+              setMessage(`Invalid/expired API key`);
               break;
             case 403:
-              setMessage(`403 PERMISSION_DENIED: Key valid but not enabled for Gemini`);
+              // 403 PERMISSION_DENIED
+              setMessage(`Key valid but not enabled for Gemini`);
               break;
             case 429:
-              setMessage(`429 RESOURCE_EXHAUSTED: Key valid but quota exceeded`);
+              // 429 RESOURCE_EXHAUSTED 
+              setMessage(`Key valid but quota exceeded`);
               break;
           }
           return;
         }
+
         try {
             chrome.storage.local.set({api}, () => {
                 setFlag(true);

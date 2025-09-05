@@ -11,6 +11,7 @@
     "extension": "npm run build && rm -rf /mnt/d/extension/dist && cp -r /home/belisarius/developer/tulip/extension/dist /mnt/d/extension/"
   },
   "dependencies": {
+    "@google/genai": "^1.17.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

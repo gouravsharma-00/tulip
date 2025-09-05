@@ -12,7 +12,7 @@ function App() {
 
   const handleReset = () => {
     chrome.storage.local.remove("api", () => {
-      setMessage("API removed")
+      setMessage("API removed") 
     })
     setFlag(false)
   }
