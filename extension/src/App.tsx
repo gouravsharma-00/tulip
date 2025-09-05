@@ -7,7 +7,9 @@ function App() {
   const [api, setApi] = useState<string>('');
   const [message, setMessage] = useState<string>('Enter Your gemini API key');
   const [flag, setFlag] = useState(false);
-  const handleSubmit = () => {
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
     if(api === '') {
       return
     }
@@ -19,6 +21,12 @@ function App() {
     }catch(err) {
       setMessage('Error Occured!!')
     }
+  }
+  const handleReset = () => {
+    chrome.storage.local.remove("api", () => {
+      setMessage("API removed")
+    })
+    setFlag(false)
   }
   useEffect(() => {
     chrome.storage.local.get(["api"], (result) => {
@@ -34,6 +42,10 @@ function App() {
   }, []);
   return (
     <>
+    {
+      flag ? 
+      <p>Hello <button onClick={handleReset}>Reset</button></p> : 
+      <>
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={Icon} className="logo" alt="Vite logo" />
@@ -41,10 +53,14 @@ function App() {
       </div>
       <h1>Tulip</h1>
       <div className="card">
-        <input type='text' placeholder='Enter gemini API key' value={api} onChange={(e) => {setApi(e.target.value)}} />
-        <button onClick={handleSubmit}>
-          Submit
-        </button>
+        <form onSubmit={handleSubmit} id='form'>
+          <input type='text' placeholder='Enter gemini API key' value={api} onChange={(e) => {setApi(e.target.value)}} 
+          id='input'/>
+          <button type='submit'>
+            Submit
+          </button>
+        </form>
+        
         <p>
           {message}
         </p>
@@ -52,6 +68,9 @@ function App() {
       <p className="read-the-docs">
           Made with ❤️ by Gourav
       </p>
+      </>
+    }
+      
     </>
   )
 }
