@@ -7,7 +7,7 @@
 
 .logo {
   height: 6em;
-  padding: 1.5em;
+  /* padding: 1.5em; */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -53,4 +53,16 @@
   padding: 0.75rem;
   font-weight: 500;
   font-family: inherit;
+}
+
+#message {
+  background-color: rgb(144, 211, 144);
+  color: white;
+  font-weight: 600;
+  font-family: inherit;
+  /* width: 100%; */
+  padding: 0.75rem;
+  text-align: center;
+  align-items: center;
+  border-radius: 5px;
 }
