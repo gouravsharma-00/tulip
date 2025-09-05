@@ -6,13 +6,14 @@ import Footer from './components/footer';
 import Chrome from './components/chrome';
 
 function App() {
-  // const [api, setApi] = useState<string>('');
+  const [api, setApi] = useState<string>('');
   const [message, setMessage] = useState<string>('Enter Your gemini API key');
   const [flag, setFlag] = useState(false);
 
   const handleReset = () => {
     chrome.storage.local.remove("api", () => {
-      setMessage("API removed") 
+      setMessage("API removed");
+      setApi('');
     })
     setFlag(false)
   }
@@ -40,10 +41,10 @@ function App() {
 
     {
       flag ? 
-        <Chrome setMessage={setMessage} reset={handleReset}/> : 
+        <Chrome setMessage={setMessage} reset={handleReset} api={api} /> : 
         <>
           <div className="card">
-            <API setFlag={setFlag} setMessage={setMessage} />
+            <API setFlag={setFlag} setMessage={setMessage} setApi={setApi} api={api} />
           </div>
         </>
     }
