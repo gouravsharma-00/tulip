@@ -1,17 +1,15 @@
-// pages/api/solve-nptel.js
+// app/api/solve-nptel/route.js
 import Tesseract from 'tesseract.js';
-import fetch from 'node-fetch';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export async function POST(req) {
   try {
-    const { ques, key } = req.body;
+    const { ques, key } = await req.json();
 
     if (!Array.isArray(ques) || !key) {
-      return res.status(400).json({ error: 'Invalid request body' });
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     // 1. OCR for each image
@@ -39,25 +37,28 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${key}`,
           },
           body: JSON.stringify({
-            model: 'gemini-1', // or your desired model
+            model: 'gemini-1',
             prompt: `Answer this multiple-choice question: ${questionText}\nReturn the correct options as an array of numbers only.`,
             max_tokens: 50,
           }),
         });
 
-        const data: any = await response.json();
-        // Extract text output
+        const data = await response.json();
         const answerText = data?.choices?.[0]?.text || '';
-        
-        // Parse numbers from answer, e.g., "1,2" -> [1,2]
         const numbers = answerText.match(/\d+/g)?.map(Number) || [];
         return numbers;
       })
     );
 
-    res.status(200).json({ result: geminiResponses });
+    return new Response(
+      JSON.stringify({ result: geminiResponses }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error', details: err.message });
+    return new Response(
+      JSON.stringify({ error: 'Internal server error', details: err.message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
