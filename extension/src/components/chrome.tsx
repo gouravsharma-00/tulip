@@ -46,12 +46,14 @@ export default function Chrome({setMessage, reset, api} :
                     const res = await fetch("https://tulip.theicedev.tech/api", {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ques: ques, key: api})
-                    })
+                        body: JSON.stringify({ ques, key: api }),
+                    });
+
 
                     const result = await res.json();
+                    console.log(result)
 
                     document.querySelectorAll('div.qt-choices').forEach((ele, index) => {
                         const target = result[index];
