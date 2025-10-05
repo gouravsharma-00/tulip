@@ -1,3 +1,3 @@
 export const ZIP = {
-    URL: '/downloads/sample.zip'
+    URL: '/downloads/tulip.zip'
 }
