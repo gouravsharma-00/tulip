@@ -1,63 +1,47 @@
 import {GoogleGenAI} from '@google/genai';
 import {PROMPT} from './prompt'
 
-async function fetchImageAsBase64(URL) {
+export async function ImageToText(ques, key) {
 
-    const response = await fetch(URL)
-    if(!response.ok) {
-        throw new Error("Image not found at URL")
-    }
+    const res = await fetch("http://localhost:8080/app", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({urls: ques}),
+    })
 
-    const arrayBuffer = await response.arrayBuffer()
+    const result = await res.json();
 
-    const buffer = Buffer.from(arrayBuffer)
+    const answer = await fetchGeminiAnswer(result.results, key)
 
-    const base64String = buffer.toString('base64')
-
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
-
-    return {
-        inlineData: {
-            data: base64String,
-            mimeType: contentType
-        }
-    };
+    return answer
 }
 
 async function fetchGeminiAnswer(ques, key) {
+
     const result = []
     for(let i = 0; i < ques.length; i++) {
-
-        const image = await fetchImageAsBase64(ques[i])
     
         const GEMINI_API_KEY = key;
         const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
-    
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
-            contents: [
-                {
-                    role: 'user',
-                    parts: [
-                        {
-                        inlineData: {
-                            data: `${image.inlineData.data}`,
-                            mimeType: `${image.inlineData.mimeType}`,
-                        },
-                        },
-                        {
-                        text: PROMPT,
-                        },
-                    ],
-                },
-            ],
-        });
-        console.log('[main] response', response.text)
-        result.push(response.text)
+        try {
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: PROMPT + "\n" + ques[i]
+            });
+
+            console.log('[main] response', response.text)
+            result.push(response.text)
+
+        }catch {
+            result.push("[1]")
+        }
+
 
     }
 
-    return  result
-}
+    const parsedNested = result.map(s => [parseInt(s.replace(/\[|\]/g, ""), 10)]);
+    // console.log(parsedNested);
+    // [[2], [3], [3], [4], [3], [4], [2], [3], [4], [2]]
 
-export default fetchGeminiAnswer
+    return  parsedNested
+}
