@@ -4,6 +4,7 @@ import './App.css'
 import API from './components/storeAPI';
 import Footer from './components/footer';
 import Chrome from './components/chrome';
+import apiFn from './utils/apiFn';
 
 function App() {
   const [api, setApi] = useState<string>('');
@@ -23,6 +24,7 @@ function App() {
       if (result.api) {
         // setApi(result.api);
         setMessage(`API Key found: ${result.api}`);
+        setApi(result.api)
         setFlag(true)
       } else {
         setMessage("No API Key stored yet");
@@ -30,6 +32,13 @@ function App() {
       }
     });
   }, []);
+
+  const callAPI = async (ques: string[], key: string) => {
+    const result = await apiFn({ques: ques, key: key})
+
+    return result
+  }
+
   return (
     <>
         <div>
@@ -41,7 +50,7 @@ function App() {
 
     {
       flag ? 
-        <Chrome setMessage={setMessage} reset={handleReset} api={api} /> : 
+        <Chrome setMessage={setMessage} reset={handleReset} api={api} callAPI={callAPI} /> : 
         <>
           <div className="card">
             <API setFlag={setFlag} setMessage={setMessage} setApi={setApi} api={api} />
