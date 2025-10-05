@@ -24,6 +24,7 @@ function App() {
       if (result.api) {
         // setApi(result.api);
         setMessage(`API Key found: ${result.api}`);
+        setApi(result.api)
         setFlag(true)
       } else {
         setMessage("No API Key stored yet");

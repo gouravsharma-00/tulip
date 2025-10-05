@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server';
+// import fetchGeminiAnswer from '@libs/ImageToText';
+// import Tesseract from "tesseract.js";
+
+export const runtime = "nodejs";  // ✅ force Node runtime
 
 export async function POST(req: Request) {
+  
 
   const {ques, key} = await req.json()
-  
-  console.log(ques, key)
+
+  //  const { data } = await Tesseract.recognize("https://tesseract.projectnaptha.com/img/eng_bw.png", "eng", {
+  //   logger: (m) => console.log(m),
+  // });
+
+  // console.log(data.text)
+
+  // const result = await fetchGeminiAnswer(ques, key);
+  // console.log(result)
 
   try {
 

@@ -74,7 +74,7 @@ export default function Chrome({setMessage, reset, api, callAPI} :
                      * 2. use gemini directly to extract and fetch image
                      * 3. Use Tesseract.js to extract text then send to gemini api to get answers
                      */
-
+                    
                     sendAPI(ques, api);
 
                     // onComplete [✅]
