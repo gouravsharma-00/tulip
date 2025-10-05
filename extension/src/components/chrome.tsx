@@ -1,4 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
 
 export default function Chrome({setMessage, reset, api} : 
     {setMessage : (message: string) => void, reset: () => void, api: string}) {
@@ -14,9 +13,10 @@ export default function Chrome({setMessage, reset, api} :
 
         chrome.scripting.executeScript({
             target: {tabId: tab.id!}, 
-            args: [], // inject argument API
-            func: async () => {
+            args: [api], // inject argument API
+            func: async (api) => {
                 console.log('[Extension]')
+                // console.log(api)
                 const sendStatus = (message: string) => {
                     chrome.runtime.sendMessage({type: "status", message})
                 }
@@ -31,6 +31,8 @@ export default function Chrome({setMessage, reset, api} :
                     sendStatus('Image URL Extraction completed ✅');
 
                     console.log(ques)
+
+                    
                     
                     /**
                      * failure : CORS (Cross-Origin Resource Sharing)
@@ -38,45 +40,33 @@ export default function Chrome({setMessage, reset, api} :
                      * solution: 
                      * 1. Node.js [backend/node has no cors policy]
                      * 2. use gemini directly to extract and fetch image
+                     * 3. Use Tesseract.js to extract text then send to gemini api to get answers
                      */
-                    /*
-                    const images: any[] = [];
-                    for(const que of ques) {
-                        let response = await fetch(que);
-                        let count = 0;
-                        while(!response.ok) {
-                            response = await fetch(que);
-                            if(count > 5) {
-                                setMessage(`Image not found at: ${que}`)
-                                break;
-                            }
-                            count++;
-                        }
-                        const img = Buffer.from(await response.arrayBuffer())
-                        images.push(img)
-                    }
-                        */
-                    
-                    // test after injecting api key
-                    const ai = new GoogleGenAI({apiKey: api});
-                    const response = await ai.models.generateContent({
-                        model: "gemini-2.5-flash",
-                        contents: [{
-                            //@ts-ignore
-                            role: "user",
-                            parts: [
-                                {text: 'Answer the following question in the images and return the correct option(s)'},
-                                {image_url: ques[0]}
-                            ]
-                        }],
-                        config: {
-                            thinkingConfig: {
-                                thinkingBudget: 0, // Disables thinking
-                            },
-                        } 
+
+                    const res = await fetch("https://tulip.theicedev.tech/api", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ques: ques, key: api})
                     })
-                    console.log(response.text)
-                    console.log(response)
+
+                    const result = await res.json();
+
+                    document.querySelectorAll('div.qt-choices').forEach((ele, index) => {
+                        const target = result[index];
+
+                        const choices = ele.querySelectorAll('div.gcb-mcq-choice')
+
+                        for(let i of target) {
+                            if(choices[i - 1]) {
+                            choices[i - 1].querySelector('input')?.click()
+                            }
+                        }
+                        })
+
+                    // onComplete [✅]
+                    sendStatus("Quiz is Completed 😘")
 
                 }catch(err) {
                     sendStatus(err instanceof Error ? `Error in Extracting URL's: ${err.message}` : `Unknown Error in Extracting URL's`)

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "extension": "npm run build && rm -rf /mnt/d/extension/dist && cp -r /home/belisarius/developer/tulip/extension/dist /mnt/d/extension/"
+    "extension": "npm run build && rm -rf /mnt/f/Personal/theicedev/tulip/dist && cp -r /home/belisarius/developer/tulip/extension/dist /mnt/f/Personal/theicedev/tulip"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
