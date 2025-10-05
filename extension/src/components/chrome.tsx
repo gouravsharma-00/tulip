@@ -1,25 +1,59 @@
 
-export default function Chrome({setMessage, reset, api} : 
-    {setMessage : (message: string) => void, reset: () => void, api: string}) {
+export default function Chrome({setMessage, reset, api, callAPI} : 
+    {setMessage : (message: string) => void, reset: () => void, api: string, callAPI: (ques: string[], key: string) => Promise<{}>}) {
 
-    async function main() {
-        const [tab] = await chrome.tabs.query({active: true});
-
-        chrome.runtime.onMessage.addListener(async (req) => {
+        chrome.runtime.onMessage.addListener((req, _, sendResponse) => {
             if(req.type === 'status') {
                 setMessage(req.message)
             }
+            else {
+                callAPI(req.ques, req.api).then((result : any) => {
+                    sendResponse(result)
+                }).catch((err: any) => {
+                    sendResponse({error: err})
+                })
+
+                return true;
+            }
         })
+
+    async function main() {
+        const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
 
         chrome.scripting.executeScript({
             target: {tabId: tab.id!}, 
-            args: [api], // inject argument API
+            args: [api],
             func: async (api) => {
+
                 console.log('[Extension]')
-                // console.log(api)
+                
                 const sendStatus = (message: string) => {
                     chrome.runtime.sendMessage({type: "status", message})
                 }
+                const sendAPI = (ques: string[], api: string) => {
+
+                    chrome.runtime.sendMessage({type: "api", ques, api}, (response) => {
+                        console.log(response)
+
+                        if(response.success) {
+
+                            document.querySelectorAll('div.qt-choices').forEach((ele, index) => {
+                            const target = response.result[index];
+
+                            const choices = ele.querySelectorAll('div.gcb-mcq-choice')
+
+                            for(let i of target) {
+                                if(choices[i - 1]) {
+                                    choices[i - 1].querySelector('input')?.click()
+                                    }
+                                }
+                            })
+                        }else {
+                            sendStatus("Error in response")
+                        }
+                    })
+                }
+
                 try {
                     /**
                      * div.qt-question < img or img.yui-img
@@ -32,8 +66,6 @@ export default function Chrome({setMessage, reset, api} :
 
                     console.log(ques)
 
-                    
-                    
                     /**
                      * failure : CORS (Cross-Origin Resource Sharing)
                      * Reason: fetching images from browser [browser have strict cors policy]
@@ -43,29 +75,7 @@ export default function Chrome({setMessage, reset, api} :
                      * 3. Use Tesseract.js to extract text then send to gemini api to get answers
                      */
 
-                    const res = await fetch("https://tulip.theicedev.tech/api", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ ques, key: api }),
-                    });
-
-
-                    const result = await res.json();
-                    console.log(result)
-
-                    document.querySelectorAll('div.qt-choices').forEach((ele, index) => {
-                        const target = result[index];
-
-                        const choices = ele.querySelectorAll('div.gcb-mcq-choice')
-
-                        for(let i of target) {
-                            if(choices[i - 1]) {
-                            choices[i - 1].querySelector('input')?.click()
-                            }
-                        }
-                        })
+                    sendAPI(ques, api);
 
                     // onComplete [✅]
                     sendStatus("Quiz is Completed 😘")
@@ -76,6 +86,7 @@ export default function Chrome({setMessage, reset, api} :
             }
         })
     }
+
     return(
         <div className="card" style={{
             display: 'flex',

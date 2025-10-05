@@ -10,6 +10,7 @@
     ],
     "host_permissions": [
         "https://onlinecourses.nptel.ac.in/*",
+        "https://tulip.theicedev.tech/*",
         "https://storage.googleapis.com/*"
     ],
     "action" : {
