@@ -3,7 +3,7 @@ import {PROMPT} from './prompt'
 
 export async function ImageToText(ques, key) {
 
-    const res = await fetch("http://localhost:8080/app", {
+    const res = await fetch("https://tulip-e19u.onrender.com/app", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({urls: ques}),
@@ -29,7 +29,7 @@ async function fetchGeminiAnswer(ques, key) {
                 contents: PROMPT + "\n" + ques[i]
             });
 
-            console.log('[main] response', response.text)
+            console.log(`[main] response ${i + 1}`, response.text)
             result.push(response.text)
 
         }catch {

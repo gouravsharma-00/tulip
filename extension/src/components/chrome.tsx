@@ -26,6 +26,35 @@ export default function Chrome({setMessage, reset, api, callAPI} :
             func: async (api) => {
 
                 console.log('[Extension]')
+
+                let flagLoading = true;
+                const Loading = () => {
+
+                    let progress = 0;
+                    let step = 1.67
+                    const interval = setInterval(() => {
+                        progress += step;
+                        if (!flagLoading) {
+                            clearInterval(interval);
+                        } else {
+                            if(progress >= 98) {
+                                step = 0;
+                            }
+                            if(progress <= 20) {
+                                sendStatus(`Do not close the extension 💀 | ${Math.floor(progress)}%`)
+                            }
+                            else if(progress <= 50) {
+                                sendStatus(`Tulip is not 100% accurate | ${Math.floor(progress)}%`)
+                            }
+                            else if(progress <= 80) {
+                                sendStatus(`Progress ⏳| ${Math.floor(progress)}%`);
+                            }
+                            else {
+                                sendStatus(`We are just there ⏳| ${Math.floor(progress)}%`);
+                            }
+                        }
+                    }, 1000);
+                }
                 
                 const sendStatus = (message: string) => {
                     chrome.runtime.sendMessage({type: "status", message})
@@ -34,9 +63,9 @@ export default function Chrome({setMessage, reset, api, callAPI} :
 
                     chrome.runtime.sendMessage({type: "api", ques, api}, (response) => {
                         console.log(response)
+                        flagLoading = false;
 
                         if(response.success) {
-
                             document.querySelectorAll('div.qt-choices').forEach((ele, index) => {
                             const target = response.result[index];
 
@@ -48,6 +77,9 @@ export default function Chrome({setMessage, reset, api, callAPI} :
                                     }
                                 }
                             })
+
+                            sendStatus("Quiz is Completed 😘");
+
                         }else {
                             sendStatus("Error in response")
                         }
@@ -64,7 +96,7 @@ export default function Chrome({setMessage, reset, api, callAPI} :
                     })
                     sendStatus('Image URL Extraction completed ✅');
 
-                    console.log(ques)
+                    // console.log(ques)
 
                     /**
                      * failure : CORS (Cross-Origin Resource Sharing)
@@ -76,9 +108,9 @@ export default function Chrome({setMessage, reset, api, callAPI} :
                      */
                     
                     sendAPI(ques, api);
+                    Loading();
 
-                    // onComplete [✅]
-                    sendStatus("Quiz is Completed 😘")
+                    // onComplete [✅]                  
 
                 }catch(err) {
                     sendStatus(err instanceof Error ? `Error in Extracting URL's: ${err.message}` : `Unknown Error in Extracting URL's`)

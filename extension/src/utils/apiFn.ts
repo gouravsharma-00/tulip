@@ -1,7 +1,7 @@
 export default async function apiFn(
     {ques, key} : {ques: string[], key: string}
 ) {
-    const response = await fetch("http://localhost:3000/api", {
+    const response = await fetch("https://tulip.theicedev.tech/api", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
