@@ -12,6 +12,10 @@ async function fetchImageBuffer(url) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+app.get("/", (req, res) => {
+  res.send("hello world")
+})
+
 app.post("/app", async (req, res) => {
   try {
     const { urls } = req.body;
