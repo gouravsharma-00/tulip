@@ -29,7 +29,7 @@ async function fetchGeminiAnswer(ques, key) {
                 contents: PROMPT + "\n" + ques[i]
             });
 
-            console.log('[main] response', response.text)
+            console.log(`[main] response ${i + 1}`, response.text)
             result.push(response.text)
 
         }catch {
