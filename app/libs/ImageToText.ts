@@ -3,7 +3,7 @@ import {PROMPT} from './prompt'
 
 export async function ImageToText(ques, key) {
 
-    const res = await fetch("https://tulip-e19u.onrender.com/app", {
+    const res = await fetch("https://tulip-4v8d.onrender.com/app", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({urls: ques}),
